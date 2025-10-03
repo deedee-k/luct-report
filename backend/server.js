@@ -13,9 +13,8 @@ app.use(cors());
 app.use(express.json());
 
 let db; // DB connection
-const SECRET = process.env.JWT_SECRET || "supersecret"; // keep safe in .env
+const SECRET = process.env.JWT_SECRET || "supersecret"; 
 
-// ---------------- INIT DB + SERVER ----------------
 async function init() {
   try {
     db = await mysql.createConnection({
@@ -28,22 +27,15 @@ async function init() {
 
     console.log("✅ Connected to MySQL");
 
-    // ---------------- ROUTES ----------------
 
-    // Root
+
     app.get("/", (req, res) => res.send("API is running..."));
 
-    // ----------- AUTH -----------
-
-    // Register
     app.post("/api/register", async (req, res) => {
       try {
         const { name, email, password, role } = req.body;
 
-        // Hash password
         const hashed = await bcrypt.hash(password, 10);
-
-        // Insert into DB
         await db.query(
           "INSERT INTO users (name, email, password, role) VALUES (?,?,?,?)",
           [name, email, hashed, role || "student"]
@@ -98,7 +90,7 @@ async function init() {
       }
     }
 
-    // Example protected route
+
     app.get("/api/me", authMiddleware, async (req, res) => {
       const [rows] = await db.query("SELECT id, name, role FROM users WHERE id=?", [req.user.id]);
       res.json(rows[0]);
@@ -137,7 +129,7 @@ async function init() {
       );
       res.json({ message: "Lecture added" });
     });
-    // Add PRL feedback to a lecture
+
 app.put("/api/lectures/:id/feedback", async (req, res) => {
   const { id } = req.params;
   const { feedback } = req.body;
@@ -147,7 +139,6 @@ app.put("/api/lectures/:id/feedback", async (req, res) => {
   res.json({ message: "Feedback added" });
 });
 
-// Get average rating for each lecture
 app.get("/api/lectures/with-ratings", async (req, res) => {
   const [rows] = await db.query(`
     SELECT l.*, 
@@ -202,7 +193,6 @@ app.get("/api/reports/excel", async (req, res) => {
   const workbook = new ExcelJS.Workbook();
   const sheet = workbook.addWorksheet("Lecture Reports");
 
-  // Add header row
   sheet.addRow([
     "Course Name",
     "Course Code",
@@ -215,7 +205,6 @@ app.get("/api/reports/excel", async (req, res) => {
     "Rating Count"
   ]);
 
-  // Add lecture data
   lectures.forEach((lec) => {
     sheet.addRow([
       lec.course_name,
@@ -230,7 +219,6 @@ app.get("/api/reports/excel", async (req, res) => {
     ]);
   });
 
-  // Set headers for download
   res.setHeader(
     "Content-Type",
     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
