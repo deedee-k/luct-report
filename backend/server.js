@@ -19,10 +19,11 @@ const SECRET = process.env.JWT_SECRET || "supersecret"; // keep safe in .env
 async function init() {
   try {
     db = await mysql.createConnection({
-      host: process.env.DB_HOST || "localhost",
+      host: process.env.DB_HOST || "mysql.railway.internal",
       user: process.env.DB_USER || "root",
-      password: process.env.DB_PASS || "",
-      database: process.env.DB_NAME || "limko_report"
+      password: process.env.DB_PASS || "NPbilwChBilqRfQOQghVzZjsdQcSvHMe",
+      database: process.env.DB_NAME || "railway",
+      port: process.env.DB_PORT || 3306
     });
 
     console.log("✅ Connected to MySQL");
