@@ -12,7 +12,6 @@ import "./style.css";
 function App() {
   const [user, setUser] = useState(null);
 
-  // Restore login on refresh
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
@@ -25,7 +24,6 @@ function App() {
     }
   }, []);
 
-  // Render dashboards per role
   const renderDashboard = () => {
     switch (user?.role) {
       case "student":
